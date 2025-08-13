@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-export const page = ({ params: { lang = "en" } }) => {
+const TestPage = ({ params: { lang = "en" } }) => {
   const [formData, setFormData] = useState({
     articleNumber: "",
     title: "",
@@ -218,3 +218,5 @@ export const page = ({ params: { lang = "en" } }) => {
     </div>
   );
 };
+
+export default TestPage;
