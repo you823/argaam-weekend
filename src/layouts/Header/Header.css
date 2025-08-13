@@ -1,0 +1,31 @@
+.navbar {
+    position: fixed;
+    background-color: #f8fff1;
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+    height: 75px;
+    padding: 0 5rem;
+}
+
+.navbar-brand {
+    margin: 0;
+}
+
+.nav-link {
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-link.active {
+    color: #ee7b0b !important;
+    border-bottom: 2px solid #ee7b0b;
+}
+
+.nav-link:hover {
+    color: #ee7b0b;
+    border-bottom: 2px solid #ee7b0b;
+}

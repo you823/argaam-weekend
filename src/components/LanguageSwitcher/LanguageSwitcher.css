@@ -1,0 +1,13 @@
+.active-lang {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #ee7b0b !important;
+    text-decoration: none;
+}
+
+.disactive-lang {
+    font-weight: normal;
+    font-size: 1.5rem;
+    color: #000 !important;
+    text-decoration: none;
+}
