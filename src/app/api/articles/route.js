@@ -1,3 +1,4 @@
+import { put } from "@vercel/blob";
 import { promises as fs } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
@@ -9,17 +10,8 @@ const dataFilePath = path.join(
   "utils",
   "data.json"
 );
-const imagesDir = path.join("public", "images", "articles");
 
 // Helper functions
-async function ensureDirectoryExists(dirPath) {
-  try {
-    await fs.mkdir(dirPath, { recursive: true });
-  } catch (err) {
-    if (err.code !== "EEXIST") throw err;
-  }
-}
-
 async function readArticles() {
   try {
     const fileData = await fs.readFile(dataFilePath, "utf8");
@@ -37,7 +29,7 @@ async function writeArticles(articles) {
   await fs.writeFile(dataFilePath, JSON.stringify(articles, null, 2));
 }
 
-// API Endpoints
+// GET all articles
 export async function GET() {
   try {
     const articles = await readArticles();
@@ -50,9 +42,8 @@ export async function GET() {
   }
 }
 
+// POST new article
 export async function POST(request) {
-  await ensureDirectoryExists(imagesDir);
-
   try {
     const formData = await request.formData();
     const articleNumber = formData.get("articleNumber");
@@ -85,19 +76,17 @@ export async function POST(request) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    // Handle image upload
-    let imagePath = null;
+    // Handle image upload with Vercel Blob
+    let imageUrl = null;
     if (imageFile) {
-      const timestamp = Date.now();
-      const ext = imageFile.name.split(".").pop();
-      const filename = `article-${timestamp}.${ext}`;
-      imagePath = `/images/articles/${filename}`;
+      // Generate unique filename
+      const filename = `article-${Date.now()}-${imageFile.name}`;
 
-      const fileBuffer = await imageFile.arrayBuffer();
-      await fs.writeFile(
-        path.join(imagesDir, filename),
-        Buffer.from(fileBuffer)
-      );
+      // Upload to Vercel Blob
+      const blob = await put(filename, imageFile, {
+        access: "public",
+      });
+      imageUrl = blob.url;
     }
 
     // Create new article
@@ -106,10 +95,11 @@ export async function POST(request) {
       articleNumber: Number(articleNumber),
       title,
       description: description || "",
-      image: imagePath,
+      image: imageUrl,
       createdAt: new Date().toISOString(),
     };
 
+    // Save to JSON
     articles.push(newArticle);
     await writeArticles(articles);
 
