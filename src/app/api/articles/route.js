@@ -1,9 +1,46 @@
+import { promises as fs } from "fs";
+import path from "path";
 import { NextResponse } from "next/server";
-import { saveArticle, getArticles, saveImage } from "../../utils/storage";
 
+const dataFilePath = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "utils",
+  "data.json"
+);
+const imagesDir = path.join(process.cwd(), "public", "images", "articles");
+
+// Helper functions
+async function ensureDirectoryExists(dirPath) {
+  try {
+    await fs.mkdir(dirPath, { recursive: true });
+  } catch (err) {
+    if (err.code !== "EEXIST") throw err;
+  }
+}
+
+async function readArticles() {
+  try {
+    const fileData = await fs.readFile(dataFilePath, "utf8");
+    return JSON.parse(fileData);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      await fs.writeFile(dataFilePath, "[]");
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function writeArticles(articles) {
+  await fs.writeFile(dataFilePath, JSON.stringify(articles, null, 2));
+}
+
+// API Endpoints
 export async function GET() {
   try {
-    const articles = await getArticles();
+    const articles = await readArticles();
     return NextResponse.json(articles);
   } catch (error) {
     return NextResponse.json(
@@ -14,6 +51,8 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  await ensureDirectoryExists(imagesDir);
+
   try {
     const formData = await request.formData();
     const articleNumber = formData.get("articleNumber");
@@ -29,23 +68,50 @@ export async function POST(request) {
       );
     }
 
-    // Handle image upload
-    let imageUrl = null;
-    if (imageFile) {
-      imageUrl = await saveImage(imageFile);
+    const articles = await readArticles();
+
+    if (
+      articles.some(
+        (article) => article.articleNumber === Number(articleNumber)
+      )
+    ) {
+      return NextResponse.json(
+        { error: "Article number already exists" },
+        { status: 400 }
+      );
     }
 
-    // Create and save article
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    // Handle image upload
+    let imagePath = null;
+    if (imageFile) {
+      const timestamp = Date.now();
+      const ext = imageFile.name.split(".").pop();
+      const filename = `article-${timestamp}.${ext}`;
+      imagePath = `/images/articles/${filename}`;
+
+      const fileBuffer = await imageFile.arrayBuffer();
+      await fs.writeFile(
+        path.join(imagesDir, filename),
+        Buffer.from(fileBuffer)
+      );
+    }
+
+    // Create new article
     const newArticle = {
-      id: Date.now(),
+      id: articles.length > 0 ? Math.max(...articles.map((a) => a.id)) + 1 : 1,
       articleNumber: Number(articleNumber),
       title,
       description: description || "",
-      image: imageUrl,
+      image: imagePath,
       createdAt: new Date().toISOString(),
     };
 
-    await saveArticle(newArticle);
+    articles.push(newArticle);
+    await writeArticles(articles);
 
     return NextResponse.json(newArticle, { status: 201 });
   } catch (error) {
