@@ -9,7 +9,7 @@ const dataFilePath = path.join(
   "utils",
   "data.json"
 );
-const imagesDir = path.join(process.cwd(), "public", "images", "articles");
+const imagesDir = path.join("public", "images", "articles");
 
 // Helper functions
 async function ensureDirectoryExists(dirPath) {

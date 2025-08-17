@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import "./ArticleCard.css";
-import { formatDate, getTimeDifference } from "../../helpers/helpers";
+import { formatDate } from "../../helpers/helpers";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 

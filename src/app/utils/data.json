@@ -22,5 +22,13 @@
     "description": "In a bustling neighborhood of Riyadh, the parents of a family of five from India had long been an integral part of a local manufacturing firm.",
     "image": "/images/articles/article-1755416459217.jpg",
     "createdAt": "2025-08-17T07:40:59.220Z"
+  },
+  {
+    "id": 4,
+    "articleNumber": 4,
+    "title": "test title",
+    "description": "test desc",
+    "image": "/images/articles/article-1755436538180.jpg",
+    "createdAt": "2025-08-17T13:15:38.187Z"
   }
 ]
