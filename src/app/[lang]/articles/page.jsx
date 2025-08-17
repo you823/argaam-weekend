@@ -4,11 +4,6 @@ import ArticleCard from "../../../components/ArticleCard/ArticleCard.jsx";
 
 const page = async ({ params }) => {
   const { lang } = await params;
-
-  // Sort articles by article_number in ascending order
-  // const sortedArticles = [...articlesData].sort((a, b) => {
-  //   return a.article_number - b.article_number;
-  // });
   return (
     <div className="articles-box">
       <div className="row">

@@ -17,7 +17,6 @@ export default async function RootLayout({ children, params }) {
         <div className="fixed-width mt-5">
           <Header lang={lang} />
           {children}
-          {/* <Footer lang={lang} /> */}
         </div>
       </body>
     </html>

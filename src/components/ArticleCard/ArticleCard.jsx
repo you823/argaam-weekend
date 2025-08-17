@@ -8,12 +8,10 @@ import Image from "next/image";
 const ArticleCard = ({ data, lang }) => {
   // Using useRouter to navigate to article details page
   const router = useRouter();
-  const timeDiff = getTimeDifference(data.created_at, new Date());
   const handleReadMore = (lang, articleId) => {
     router.push(`/${lang}/articles/${articleId}`);
   };
 
-  // Get the current language from the URL parameters
 
   // Render the article card
   if (!data) {
