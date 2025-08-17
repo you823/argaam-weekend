@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { saveArticle, getArticles, saveImage } from "@/utils/storage";
+import { saveArticle, getArticles, saveImage } from "../../utils/storage";
 
 export async function GET() {
   try {
